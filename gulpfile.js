@@ -63,13 +63,15 @@ function somethingHappend() {
         }
     });
 
+    
     //Watching for changes
     watch([files.htmlPath, files.jsPath, files.cssPath, files.imgPath], 
         parallel(copyHTML, jsTask, cssTask, imgTask));
 
     watch(['pub/js', 'pub/css', 'pub', 'pub/images']).on('change', browsersync.reload);
 
-}
+    }
+
 
 
 
