@@ -4,6 +4,7 @@ const uglify = require("gulp-uglify-es").default;
 const cleanCSS = require("gulp-clean-css");
 const browsersync = require("browser-sync").create();
 const imagemin = require("gulp-imagemin");
+const sourcemaps = require("gulp-sourcemaps");
 
 //search paths
 const files = {
@@ -13,7 +14,7 @@ const files = {
     imgPath: "src/images/*"
 }
 
-//TASK
+//TASKS
 // Copy html files
 function copyHTML() {
     return src(files.htmlPath)
@@ -21,24 +22,29 @@ function copyHTML() {
     );
 }
 
-//concat and minify js-files
+//concat, minify and copy js-files
 function jsTask() {
     return src(files.jsPath)
+        .pipe(sourcemaps.init())
         .pipe(concat('main.js'))
         .pipe(uglify())
+        .pipe(sourcemaps.write())
         .pipe(dest('pub/js')
     );
 }
 
-//concat and minify css-files
+//concat, minify and copy css-files
 function cssTask() {
     return src(files.cssPath)
+        .pipe(sourcemaps.init())
         .pipe(concat('styles.css'))
         .pipe(cleanCSS())
-        .pipe(dest('pub/css'))
+        .pipe(sourcemaps.write())
+        .pipe(dest('pub/css')
+    );
 }
 
-//minify images
+//minify and copy images 
 function imgTask() {
     return src(files.imgPath)
         .pipe(imagemin([
@@ -52,7 +58,8 @@ function imgTask() {
                 ]
             })
         ]))
-        .pipe(dest('pub/images'))
+        .pipe(dest('pub/images')
+    );
 }
 
 //Browsersync - reload the page when changes are made
@@ -62,7 +69,6 @@ function somethingHappend() {
             baseDir: './pub/'
         }
     });
-
     
     //Watching for changes
     watch([files.htmlPath, files.jsPath, files.cssPath, files.imgPath], 
@@ -70,9 +76,7 @@ function somethingHappend() {
 
     watch(['pub/js', 'pub/css', 'pub', 'pub/images']).on('change', browsersync.reload);
 
-    }
-
-
+}
 
 
 //default TASKS
